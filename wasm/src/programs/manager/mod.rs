@@ -26,6 +26,7 @@ use crate::{KeyPair, PrivateKey, ProvingKey, RecordPlaintext, VerifyingKey};
 
 use crate::types::native::{
     cost_in_microcredits,
+    execution_cost,
     deployment_cost,
     IdentifierNative,
     ProcessNative,

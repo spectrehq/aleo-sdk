@@ -17,8 +17,10 @@
 use super::{Address, PrivateKey};
 use crate::record::RecordCiphertext;
 
-use crate::types::native::ViewKeyNative;
+use crate::types::native::{ViewKeyNative, CurrentNetwork, IdentifierNative, Field, CiphertextNative};
 use core::{convert::TryFrom, fmt, ops::Deref, str::FromStr};
+use snarkvm_console::types::{Group, U16};
+use snarkvm_console::prelude::{ToBits, Network};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -67,6 +69,26 @@ impl ViewKey {
         match ciphertext.decrypt(self) {
             Ok(plaintext) => Ok(plaintext.to_string()),
             Err(error) => Err(error),
+        }
+    }
+
+    /// Decrypt a ciphertext with a view key
+    pub fn decrypt_ciphertext(&self, ciphertext: &str, program: &str, function: &str, index: u16, tpk: &str) -> Result<String, String> {
+        let tpk = Group::<CurrentNetwork>::from_str(tpk).unwrap();
+        let tvk = (tpk * **self.clone()).to_x_coordinate();
+        let function_id = CurrentNetwork::hash_bhp1024(
+            &(
+                U16::<CurrentNetwork>::new(3),
+                &IdentifierNative::from_str(program).unwrap(),
+                &IdentifierNative::from_str("aleo").unwrap(),
+                &IdentifierNative::from_str(function).unwrap(),
+            ).to_bits_le(),
+        ).unwrap();
+        let ivk = CurrentNetwork::hash_psd4(&[function_id, tvk, Field::from_u16(index)]).unwrap();
+        let ciphertext = CiphertextNative::from_str(ciphertext).unwrap();
+        match ciphertext.decrypt_symmetric(ivk) {
+            Ok(plaintext) => Ok(plaintext.to_string()),
+            Err(_) => Err("Decryption failed - view key did not match ciphertext".to_string()),
         }
     }
 }

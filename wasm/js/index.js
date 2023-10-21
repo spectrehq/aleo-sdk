@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import { fileURLToPath } from "url";
 import wasm from "../dist/wasm.js";
 
 const {
@@ -6,6 +8,7 @@ const {
     Execution,
     ExecutionResponse,
     Field,
+    ProgramID,
     Metadata,
     OfflineQuery,
     Private,
@@ -15,6 +18,7 @@ const {
     ProvingKey,
     RecordCiphertext,
     RecordPlaintext,
+    Plaintext,
     ProgramManager,
     Signature,
     Transaction,
@@ -23,7 +27,12 @@ const {
     verifyFunctionExecution,
 } = await wasm({
     importHook: () => {
-        return new URL("assets/aleo_wasm.wasm", import.meta.url);
+        const url = new URL("assets/aleo_wasm.wasm", import.meta.url);
+        if (typeof window !== 'undefined') {
+            return url;
+        } else {
+            return fs.readFileSync(fileURLToPath(url));
+        }
     },
 });
 
@@ -43,6 +52,7 @@ export {
     Execution,
     ExecutionResponse,
     Field,
+    ProgramID,
     Metadata,
     OfflineQuery,
     PrivateKey,
@@ -51,6 +61,7 @@ export {
     ProvingKey,
     RecordCiphertext,
     RecordPlaintext,
+    Plaintext,
     ProgramManager,
     Signature,
     Transaction,

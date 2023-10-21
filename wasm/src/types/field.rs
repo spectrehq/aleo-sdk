@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with the Aleo SDK library. If not, see <https://www.gnu.org/licenses/>.
 
-use crate::types::native::FieldNative;
+use crate::types::native::{AddressNative, FieldNative};
+use crate::account::Address;
 
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use std::str::FromStr;
+use snarkvm_console::network::FromField;
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -35,6 +37,11 @@ impl Field {
     #[wasm_bindgen(js_name = "fromString")]
     pub fn from_string(field: &str) -> Result<Field, String> {
         Ok(Self(FieldNative::from_str(field).map_err(|e| e.to_string())?))
+    }
+
+    #[wasm_bindgen(js_name = "toAddress")]
+    pub fn to_address(&self) -> Result<Address, String> {
+        Ok(Address::from(AddressNative::from_field(&self.0).map_err(|e| e.to_string())?))
     }
 }
 

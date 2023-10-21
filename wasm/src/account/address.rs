@@ -17,7 +17,9 @@
 use crate::account::{PrivateKey, Signature, ViewKey};
 
 use crate::types::native::AddressNative;
+use crate::types::Field;
 use core::{convert::TryFrom, fmt, ops::Deref, str::FromStr};
+use snarkvm_console::network::ToField;
 use wasm_bindgen::prelude::*;
 
 /// Public address of an Aleo account
@@ -66,6 +68,10 @@ impl Address {
     /// @returns {boolean} Boolean representing whether or not the signature is valid
     pub fn verify(&self, message: &[u8], signature: &Signature) -> bool {
         signature.verify(self, message)
+    }
+
+    pub fn to_field(&self) -> Field {
+        Field::from(self.0.to_field().unwrap())
     }
 }
 

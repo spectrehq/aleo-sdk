@@ -31,6 +31,7 @@ use crate::{
 
 use crate::types::native::{
     CurrentAleo,
+    CurrentNetwork,
     IdentifierNative,
     ProcessNative,
     ProgramNative,
@@ -162,7 +163,7 @@ impl ProgramManager {
         offline_query: Option<OfflineQuery>,
     ) -> Result<Transaction, String> {
         log(&format!("Executing function: {function} on-chain"));
-        let fee_microcredits = match &fee_record {
+        let mut fee_microcredits = match &fee_record {
             Some(fee_record) => Self::validate_amount(fee_credits, fee_record, true)?,
             None => (fee_credits * 1_000_000.0) as u64,
         };
@@ -202,6 +203,12 @@ impl ProgramManager {
             .prove_execution::<CurrentAleo, _>(&locator, &mut StdRng::from_entropy())
             .map_err(|e| e.to_string())?;
         let execution_id = execution.to_execution_id().map_err(|e| e.to_string())?;
+
+        let (minimum_execution_cost, (_, _)) =
+            execution_cost::<CurrentNetwork>(process, &execution).map_err(|err| err.to_string())?;
+        if fee_microcredits < minimum_execution_cost {
+            fee_microcredits = minimum_execution_cost;
+        }
 
         log("Executing fee");
         let fee = execute_fee!(

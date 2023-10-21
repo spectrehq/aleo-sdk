@@ -143,6 +143,19 @@ export class Account {
   }
 
   /**
+   * Decrypts a ciphertext into plaintext
+   * @param {string} ciphertext
+   * @param {string} programId
+   * @param {string} functionName
+   * @param {number} index
+   * @param {string} tpk
+   * @returns {string}
+   */
+  decryptCiphertext(ciphertext: string, programId: string, functionName: string, index: number, tpk: string) {
+    return this._viewKey.decrypt_ciphertext(ciphertext, programId, functionName, index, tpk);
+  }
+
+  /**
    * Determines whether the account owns a ciphertext record
    * @param {RecordCipherText | string} ciphertext
    * @returns {boolean}

@@ -161,6 +161,9 @@ pub use programs::*;
 pub mod record;
 pub use record::*;
 
+pub mod plaintext;
+pub use plaintext::*;
+
 pub mod types;
 pub use types::Field;
 

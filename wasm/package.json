@@ -34,8 +34,7 @@
   },
   "homepage": "https://github.com/AleoHQ/sdk#readme",
   "scripts": {
-    "build": "rimraf dist && rollup -c rollup.config.js && cpr js/types dist && rimraf dist/wasm*",
-    "prepublish": "yarn build",
+    "build": "rimraf dist && rollup -c rollup.config.js && cpr js/types dist && rimraf --glob dist/wasm*",
     "test": "node test.js"
   },
   "devDependencies": {

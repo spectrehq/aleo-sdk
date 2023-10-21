@@ -1,6 +1,6 @@
 import wasm from "../dist/wasm.js";
 
-async function initializeWorker(wasm) {
+export async function initializeWorker() {
     // Wait for the main thread to send us the Module, Memory, and Rayon thread pointer.
     function wait() {
         return new Promise((resolve) => {
@@ -32,5 +32,3 @@ async function initializeWorker(wasm) {
     // When the Rayon thread is finished, close the Worker.
     close();
 }
-
-await initializeWorker(wasm);
